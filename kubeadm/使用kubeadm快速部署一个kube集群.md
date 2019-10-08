@@ -76,5 +76,19 @@ sudo sed -i 's+download.docker.com+mirrors.tuna.tsinghua.edu.cn/docker-ce+' /etc
 5. 最后安装：
 ```shell
 sudo yum makecache fast
-sudo yum install docker-ce
+sudo yum list docker-ce --showduplicates | sort -r
+sudo yum install docker-ce docker-ce-18.09.7-3.el7
+```
+
+## 4.2添加阿里云YUM软件源
+```shell
+$ cat > /etc/yum.repos.d/kubernetes.repo << EOF
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg  https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
 ```
