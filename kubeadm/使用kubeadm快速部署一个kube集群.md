@@ -175,7 +175,9 @@ node2    NotReady   <none>   20s   v1.14.0
 ```
 
 # 安装Pod容器网络插件（CNI）
+
 Calico
+---
 ```Calico
 wget --no-check-certificate https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 kubectl apply -f calico.yaml
