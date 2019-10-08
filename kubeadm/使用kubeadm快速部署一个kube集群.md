@@ -45,8 +45,8 @@ $ cat /etc/hosts
 192.168.31.66 k8s-node2
  
 将桥接的IPv4流量传递到iptables的链： 
-$ cat > /etc/sysctl.d/k8s.conf << EOF   net.bridge.bridge-nf-call-ip6tables = 1   net.bridge.bridge-nf-call-iptables = 1  
-EOF
+$ cat > /etc/sysctl.d/k8s.conf<<EOF  net.bridge.bridge-nf-call-ip6tables = 1  net.bridge.bridge-nf-call-iptables = 1  
+EOF  
 $ sysctl --system
 ```
 
