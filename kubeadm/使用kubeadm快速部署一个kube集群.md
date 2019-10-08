@@ -60,7 +60,7 @@ Kubernetes默认CRI（容器运行时）为Docker，因此先安装Docker。
 ## 4.1安装Docker
 1. 如果你之前安装过 docker，请先删掉
 ```shell
-sudo yum remove docker docker-common docker-selinux docker-engine
+sudo yum remove -y docker docker-common docker-selinux docker-engine
 ```
 2. 安装一些依赖
 ```shell
@@ -79,7 +79,7 @@ sudo sed -i 's+download.docker.com+mirrors.tuna.tsinghua.edu.cn/docker-ce+' /etc
 ```shell
 sudo yum makecache fast
 sudo yum list docker-ce --showduplicates | sort -r
-sudo yum install docker-ce-18.09.7
+sudo yum install docker-ce-18.09.9-3.el7
 sudo systemctl enable docker.service && systemctl start docker.service
 ```
 
@@ -100,7 +100,8 @@ EOF
 ## 4.3 安装kubeadm，kubelet和kubectl
 由于版本更新频繁，这里指定版本号部署：
 ```shell
-$ yum install -y kubelet-1.13.3 kubeadm-1.13.3 kubectl-1.13.3
+$ yum install -y kubelet-1.14.0  kubectl-1.14.0 
+$ yum install -y kubeadm-1.14.0 
 $ systemctl enable kubelet
 ```
 k8s 命令自动补全 
@@ -112,14 +113,29 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 ```
 
 # 5.部署Kubernetes Master
+使用国内docker镜像加速
+```shell
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://qko9lxe2.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+kubeadm初始化kubernetes集群
 ```shell
 $ kubeadm init \
     --apiserver-advertise-address=192.168.50.201 \
     --image-repository registry.aliyuncs.com/google_containers \
     --kubernetes-version v1.13.3 \
-    --service-cidr=10.1.0.0/16\
+    --service-cidr=10.1.0.0/16 \
     --pod-network-cidr=10.244.0.0/16
 ```
+
+
 
 由于默认拉取镜像地址k8s.gcr.io国内无法访问，这里指定阿里云镜像仓库地址。
 使用kubectl工具:
@@ -131,7 +147,8 @@ $ kubectl get nodes
 ```
 # 6.安装Pod容器网络插件（CNI）
 ```Calico
-kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
+wget --no-check-certificate https://docs.projectcalico.org/v3.8/manifests/calico.yaml
+kubectl apply -f calico.yaml
 ```
 
 ---
@@ -161,17 +178,7 @@ $ kubectl get pod,svc
 wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
 ```
 默认镜像国内无法访问，修改`112行`镜像地址为： xbw1220/kubernetes-dashboard-amd64:v1.10.1
-使用国内docker镜像加速
-```shell
-sudo mkdir -p /etc/docker
-sudo tee /etc/docker/daemon.json <<-'EOF'
-{
-  "registry-mirrors": ["https://qko9lxe2.mirror.aliyuncs.com"]
-}
-EOF
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
+
 
 2. 默认Dashboard只能集群内部访问，修改`Service`为`NodePort`类型(如下图)，暴露到外部：
 ![Image text](./pic/Dashboard-Service.png)
