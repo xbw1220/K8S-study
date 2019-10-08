@@ -6,7 +6,7 @@
     - [添加阿里云YUM软件源](#添加阿里云yum软件源)
     - [安装kubeadm，kubelet和kubectl](#安装kubeadmkubelet和kubectl)
 - [部署Kubernetes Master](#部署kubernetes-master)
-- [加入Kubernetes Node](#加入kubernetes-node)
+- [加入Kubernetes Node（Node节点操作）](#加入kubernetes-nodenode节点操作)
 - [安装Pod容器网络插件（CNI）](#安装pod容器网络插件cni)
 - [测试kubernetes集群](#测试kubernetes集群)
 - [部署 Dashboard](#部署-dashboard)
@@ -161,7 +161,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-# 加入Kubernetes Node
+# 加入Kubernetes Node（Node节点操作）
 向集群添加新节点，执行在kubeadm init输出的kubeadm join命令：
 ```shell
 $ kubeadm join 192.168.50.201:6443 --token aq1vhn.z3bxgksklys1ryo2 \
