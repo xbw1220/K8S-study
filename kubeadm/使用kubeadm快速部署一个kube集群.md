@@ -173,7 +173,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-2. 默认Dashboard只能集群内部访问，修改`157行`下面添加`Service`为`NodePort`类型，暴露到外部：
+2. 默认Dashboard只能集群内部访问，修改`Service`为`NodePort`类型(如下图)，暴露到外部：
 ![Image text](./pic/Dashboard-Service.png)
 
 3. 部署kubernetes-dashboard
