@@ -79,20 +79,21 @@ sudo sed -i 's+download.docker.com+mirrors.tuna.tsinghua.edu.cn/docker-ce+' /etc
 ```shell
 sudo yum makecache fast
 sudo yum list docker-ce --showduplicates | sort -r
-sudo yum install docker-ce docker-ce-18.09.7-3.el7
+sudo yum install docker-ce-18.09.7
 sudo systemctl enable docker.service && systemctl start docker.service
 ```
 
 ## 4.2添加阿里云YUM软件源
 ```shell
-$ cat > /etc/yum.repos.d/kubernetes.repo << EOF
+$ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
-baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
+baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
 enabled=1
-gpgcheck=1
-repo_gpgcheck=1
-gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg  https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+gpgcheck=0
+repo_gpgcheck=0
+gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
+       http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
 EOF
 ```
 
@@ -112,11 +113,11 @@ echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 # 5.部署Kubernetes Master
 ```shell
-$ kubeadm init \  
-    --apiserver-advertise-address=192.168.50.201 \  
-    --image-repository registry.aliyuncs.com/google_containers \  
-    --kubernetes-version v1.13.3 \  
-    --service-cidr=10.1.0.0/16\  
+$ kubeadm init \
+    --apiserver-advertise-address=192.168.50.201 \
+    --image-repository registry.aliyuncs.com/google_containers \
+    --kubernetes-version v1.13.3 \
+    --service-cidr=10.1.0.0/16\
     --pod-network-cidr=10.244.0.0/16
 ```
 
