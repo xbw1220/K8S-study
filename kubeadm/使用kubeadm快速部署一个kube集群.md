@@ -1,3 +1,5 @@
+autoauto- [安装要求](#安装要求)auto-[学习目标](#学习目标)auto- [准备环境](#准备环境)auto- [所有节点安装Docker/kubeadm/kubelet](#所有节点安装dockerkubeadmkubelet)auto    - [安装Docker](#安装docker)auto    - [添加阿里云YUM软件源](#添加阿里云yum软件源)auto    - [安装kubeadm，kubelet和kubectl](#安装kubeadmkubelet和kubectl)auto- [部署Kubernetes Master](#部署kubernetes-master)auto- [加入Kubernetes Node](#加入kubernetes-node)auto- [安装Pod容器网络插件（CNI）](#安装pod容器网络插件cni)auto- [测试kubernetes集群](#测试kubernetes集群)auto- [部署 Dashboard](#部署-dashboard)autoauto
+
 kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。
 这个工具能通过两条指令完成一个kubernetes集群的部署：
 
@@ -9,21 +11,21 @@ $ kubeadm init
 $ kubeadm join < Master节点的IP和端口 >
 ```
 
-# 1.安装要求
+# 安装要求
 在开始之前，部署Kubernetes集群机器需要满足以下几个条件：
 + 一台或多台机器，操作系统 CentOS7.x-86_x64
 + 硬件配置：2GB或更多RAM，2个CPU或更多CPU，硬盘30GB或更多
 + 集群中所有机器之间网络互通 可以访问外网，需要拉取镜像
 + 禁止swap分区
 
-# 2.学习目标
+# 学习目标
 1. 在所有节点上安装Docker和kubeadm
 2. 部署Kubernetes Master
 3. 部署容器网络插件
 4. 部署 Kubernetes Node，将节点加入Kubernetes集群
 5. 部署Dashboard Web页面，可视化查看Kubernetes资源
 
-# 3. 准备环境
+# 准备环境
 Kubernetse架构图
 ![Image text](./pic/kubernetes架构图.png)
 
@@ -60,9 +62,9 @@ EOF
 $ sysctl --system
 ```
 
-# 4.所有节点安装Docker/kubeadm/kubelet
+# 所有节点安装Docker/kubeadm/kubelet
 Kubernetes默认CRI（容器运行时）为Docker，因此先安装Docker。 
-## 4.1安装Docker
+## 安装Docker
 1. 如果你之前安装过 docker，请先删掉
 ```shell
 sudo yum remove -y docker docker-common docker-selinux docker-engine
@@ -88,7 +90,7 @@ sudo yum install docker-ce-18.09.9-3.el7
 sudo systemctl enable docker.service && systemctl start docker.service
 ```
 
-## 4.2添加阿里云YUM软件源
+## 添加阿里云YUM软件源
 ```shell
 $ cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -102,7 +104,7 @@ gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
 EOF
 ```
 
-## 4.3 安装kubeadm，kubelet和kubectl
+## 安装kubeadm，kubelet和kubectl
 由于版本更新频繁，这里指定版本号部署：
 ```shell
 $ yum install -y kubelet-1.14.0  kubeadm-1.14.0
@@ -117,7 +119,7 @@ source <(kubectl completion bash)
 echo "source <(kubectl completion bash)" >> ~/.bashrc
 ```
 
-# 5.部署Kubernetes Master
+# 部署Kubernetes Master
 使用国内docker镜像加速
 ```shell
 sudo mkdir -p /etc/docker
@@ -148,7 +150,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-# 6.加入Kubernetes Node
+# 加入Kubernetes Node
 向集群添加新节点，执行在kubeadm init输出的kubeadm join命令：
 ```shell
 $ kubeadm join 192.168.50.201:6443 --token aq1vhn.z3bxgksklys1ryo2 \
@@ -161,7 +163,7 @@ node1    NotReady   <none>   24s   v1.14.0
 node2    NotReady   <none>   20s   v1.14.0
 ```
 
-# 7.安装Pod容器网络插件（CNI）
+# 安装Pod容器网络插件（CNI）
 Calico
 ```Calico
 wget --no-check-certificate https://docs.projectcalico.org/v3.8/manifests/calico.yaml
@@ -180,7 +182,7 @@ node1    Ready    <none>   3m7s   v1.14.0
 node2    Ready    <none>   3m3s   v1.14.0
 ```
 
-# 8.测试kubernetes集群
+# 测试kubernetes集群
 ```shell
 $ kubectl create deployment nginx --image=nginx
 $ kubectl expose deployment nginx --port=80 --type=NodePort
@@ -194,7 +196,7 @@ service/nginx        NodePort    10.1.177.137   <none>        80:31367/TCP   55s
 ```
 访问地址：http://NodeIP:Port 
 
-# 9.部署 Dashboard
+# 部署 Dashboard
 1. 下载kubernetes-dashboard的部署配置
 ```shell
 wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
