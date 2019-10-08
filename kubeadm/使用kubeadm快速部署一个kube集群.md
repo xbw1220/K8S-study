@@ -209,8 +209,9 @@ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/r
 ```shell
 $ kubectl apply -f kubernetes-dashboard.yaml
 ```
-访问地址： https://NodePort:30001 (使用https协议打开页面，谷歌浏览器无法访问的话，使用火狐浏览器访问)
-创建service account并绑定默认cluster-admin管理员集群角色：
+4. 访问地址： https://NodePort:30001 (使用https协议打开页面，谷歌浏览器无法访问的话，使用火狐浏览器访问)
+
+5. 创建service account并绑定默认cluster-admin管理员集群角色：
 
 ```shell
 $ kubectl create serviceaccount dashboard-admin -n kube-system 
