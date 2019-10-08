@@ -1,4 +1,15 @@
-autoauto- [安装要求](#安装要求)auto-[学习目标](#学习目标)auto- [准备环境](#准备环境)auto- [所有节点安装Docker/kubeadm/kubelet](#所有节点安装dockerkubeadmkubelet)auto    - [安装Docker](#安装docker)auto    - [添加阿里云YUM软件源](#添加阿里云yum软件源)auto    - [安装kubeadm，kubelet和kubectl](#安装kubeadmkubelet和kubectl)auto- [部署Kubernetes Master](#部署kubernetes-master)auto- [加入Kubernetes Node](#加入kubernetes-node)auto- [安装Pod容器网络插件（CNI）](#安装pod容器网络插件cni)auto- [测试kubernetes集群](#测试kubernetes集群)auto- [部署 Dashboard](#部署-dashboard)autoauto
+- [安装要求](#安装要求)
+- [学习目标](#学习目标)
+- [准备环境](#准备环境)
+- [所有节点安装Docker/kubeadm/kubelet](#所有节点安装dockerkubeadmkubelet)
+    - [安装Docker](#安装docker)
+    - [添加阿里云YUM软件源](#添加阿里云yum软件源)
+    - [安装kubeadm，kubelet和kubectl](#安装kubeadmkubelet和kubectl)
+- [部署Kubernetes Master](#部署kubernetes-master)
+- [加入Kubernetes Node](#加入kubernetes-node)
+- [安装Pod容器网络插件（CNI）](#安装pod容器网络插件cni)
+- [测试kubernetes集群](#测试kubernetes集群)
+- [部署 Dashboard](#部署-dashboard)
 
 kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。
 这个工具能通过两条指令完成一个kubernetes集群的部署：
