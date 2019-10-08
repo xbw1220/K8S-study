@@ -58,7 +58,8 @@ kubeadm 通过执行必要的操作来启动和运行一个最小可用的集群
 |192.168.2.13|k8s-master-03|2C & 2G|master|
 |192.168.2.22|k8s-node-02|2c & 4G|node|
 ## 2. 各个节点端口占用
-+ Master节点  
++ Master节点
+
 |规则|方向|端口范围|作用|使用者|
 |:-:|:-:|:-:|:-|:-|
 |TCP|Inbound|6443*|Kubernetes API|server All|
@@ -67,7 +68,8 @@ kubeadm 通过执行必要的操作来启动和运行一个最小可用的集群
 |TCP|Inbound|10251|kube-scheduler|Self|
 |TCP|Inbound|10252|kube-controller-manager|Self|
 
-+ Node节点  
++ Node节点
+
 |规则|方向|端口范围|作用|使用者|
 |:-:|:-:|:-:|:-|:-|
 |TCP|Inbound|10250|Kubelet API|Self, Control|plane|
