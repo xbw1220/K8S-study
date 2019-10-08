@@ -133,10 +133,45 @@ $ kubectl get nodes
 ```Calico
 kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 ```
+
 ---
 ```flannel
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+
 ```
 
 # 7.加入Kubernetes Node
 向集群添加新节点，执行在kubeadm init输出的kubeadm join命令：
+```shell
+kubeadm join 192.168.50.201:6443 --token 3w5duc.h2p42yn1765bjk3w --discovery-token-ca-cert-hash sha256:79084ee4256435f07c143ce3544b08ce94e33f518bc8427407b292d0be004574
+```
+
+# 8.测试kubernetes集群
+```shell
+$ kubectl create deployment nginx --image=nginx
+$ kubectl expose deployment nginx --port=80 --type=NodePort
+$ kubectl get pod,svc
+```
+
+访问地址：http://NodeIP:Port 
+
+# 9.部署 Dashboard
+1. 下载kubernetes-dashboard的部署配置
+```shell
+wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+```
+默认镜像国内无法访问，修改`112行`镜像地址为： xbw1220/kubernetes-dashboard-amd64:v1.10.1
+使用国内docker镜像加速
+```shell
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{
+  "registry-mirrors": ["https://qko9lxe2.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+```
+
+2. 默认Dashboard只能集群内部访问，修改`157行`下面添加`Service`为`NodePort`类型，暴露到外部：
+![Image text](./pic/Dashboard-Service.png)
