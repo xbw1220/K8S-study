@@ -40,11 +40,16 @@ $ setenforce 0
 $ swapoff -a  $ 临时
 $ vim /etc/fstab  $ 永久
  
+设置主机名称
+$ hostnamectl set-hostname master
+$ hostnamectl set-hostname node1
+$ hostnamectl set-hostname node2
+
 添加主机名与IP对应关系（记得设置主机名）： 
 $ cat /etc/hosts
-192.168.50.201 k8s-master
-192.168.50.202 k8s-node1
-192.168.50.203 k8s-node2
+192.168.50.201 master
+192.168.50.202 node1
+192.168.50.203 node2
  
 将桥接的IPv4流量传递到iptables的链： 
 $ cat > /etc/sysctl.d/k8s.conf <<EOF
@@ -100,8 +105,8 @@ EOF
 ## 4.3 安装kubeadm，kubelet和kubectl
 由于版本更新频繁，这里指定版本号部署：
 ```shell
-$ yum install -y kubelet-1.14.0  kubectl-1.14.0 
-$ yum install -y kubeadm-1.14.0 
+$ yum install -y kubelet-1.14.0  kubeadm-1.14.0
+$ yum install -y kubeadm-1.14.0 kubectl-1.14.0 
 $ systemctl enable kubelet
 ```
 k8s 命令自动补全 
@@ -130,12 +135,10 @@ kubeadm初始化kubernetes集群
 $ kubeadm init \
     --apiserver-advertise-address=192.168.50.201 \
     --image-repository registry.aliyuncs.com/google_containers \
-    --kubernetes-version v1.13.3 \
+    --kubernetes-version v1.14.0 \
     --service-cidr=10.1.0.0/16 \
     --pod-network-cidr=10.244.0.0/16
 ```
-
-
 
 由于默认拉取镜像地址k8s.gcr.io国内无法访问，这里指定阿里云镜像仓库地址。
 使用kubectl工具:
@@ -143,24 +146,38 @@ $ kubeadm init \
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
-$ kubectl get nodes
 ```
-# 6.安装Pod容器网络插件（CNI）
+
+# 6.加入Kubernetes Node
+向集群添加新节点，执行在kubeadm init输出的kubeadm join命令：
+```shell
+$ kubeadm join 192.168.50.201:6443 --token aq1vhn.z3bxgksklys1ryo2 \
+    --discovery-token-ca-cert-hash sha256:9447aee17d2aef5f51129e88bebe5710309450154060a4eea552334cae2f3f3f
+
+$ kubectl get nodes
+NAME     STATUS     ROLES    AGE   VERSION
+master   NotReady   master   78s   v1.14.0
+node1    NotReady   <none>   24s   v1.14.0
+node2    NotReady   <none>   20s   v1.14.0
+```
+
+# 7.安装Pod容器网络插件（CNI）
+Calico
 ```Calico
 wget --no-check-certificate https://docs.projectcalico.org/v3.8/manifests/calico.yaml
 kubectl apply -f calico.yaml
 ```
 
+Flannel
 ---
-```flannel
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
+```Flannel
+$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml
 
-```
-
-# 7.加入Kubernetes Node
-向集群添加新节点，执行在kubeadm init输出的kubeadm join命令：
-```shell
-kubeadm join 192.168.50.201:6443 --token 3w5duc.h2p42yn1765bjk3w --discovery-token-ca-cert-hash sha256:79084ee4256435f07c143ce3544b08ce94e33f518bc8427407b292d0be004574
+$ kubectl get nodes
+NAME     STATUS   ROLES    AGE    VERSION
+master   Ready    master   4m1s   v1.14.0
+node1    Ready    <none>   3m7s   v1.14.0
+node2    Ready    <none>   3m3s   v1.14.0
 ```
 
 # 8.测试kubernetes集群
@@ -168,8 +185,13 @@ kubeadm join 192.168.50.201:6443 --token 3w5duc.h2p42yn1765bjk3w --discovery-tok
 $ kubectl create deployment nginx --image=nginx
 $ kubectl expose deployment nginx --port=80 --type=NodePort
 $ kubectl get pod,svc
-```
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/nginx-65f88748fd-7sx2c   1/1     Running   0          61s
 
+NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes   ClusterIP   10.1.0.1       <none>        443/TCP        5m23s
+service/nginx        NodePort    10.1.177.137   <none>        80:31367/TCP   55s
+```
 访问地址：http://NodeIP:Port 
 
 # 9.部署 Dashboard
@@ -187,3 +209,13 @@ wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/r
 ```shell
 $ kubectl apply -f kubernetes-dashboard.yaml
 ```
+访问地址： https://NodePort:30001 (使用https协议打开页面，谷歌浏览器无法访问的话，使用火狐浏览器访问)
+创建service account并绑定默认cluster-admin管理员集群角色：
+
+```shell
+$ kubectl create serviceaccount dashboard-admin -n kube-system 
+$ kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin
+$ kubectl describe secrets -n kube-system $(kubectl -n kube-system get secret | awk '/dashboard-admin/{print $1}')
+```
+![Image text](./pic/dashboard-token.png)
+![Image text](./pic/dashboard-index.png)
