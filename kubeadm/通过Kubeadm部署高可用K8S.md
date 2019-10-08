@@ -72,7 +72,7 @@ kubeadm 通过执行必要的操作来启动和运行一个最小可用的集群
 
 |规则|方向|端口范围|作用|使用者|
 |:-:|:-:|:-:|:-|:-|
-|TCP|Inbound|10250|Kubelet API|Self, Control|plane|
+|TCP|Inbound|10250|Kubelet API|Self, Control plane|
 |TCP|Inbound|30000-32767|NodePort Services**|All|
 
 ## 3. 基础环境设置
