@@ -813,8 +813,8 @@ scp /etc/kubernetes/admin.conf root@master03.k8s.io:/etc/kubernetes
 scp /etc/kubernetes/pki/{ca.*,sa.*,front-proxy-ca.*} root@master03.k8s.io:/etc/kubernetes/pki
 scp /etc/kubernetes/pki/etcd/ca.* root@master03.k8s.io:/etc/kubernetes/pki/etcd
 ```
-+ master节点加入集群
-master02 和 master03 服务器上都执行加入集群操作
++ master节点加入集群  
+master02 和 master03 服务器上都执行加入集群操作  
 ```kubeadm join master.k8s.io:16443 --token dm3cw1.kw4hq84ie1376hji --discovery-token-ca-cert-hash sha256:f079b624773145ba714b56e177f52143f90f75a1dcebabda6538a49e224d4009 --experimental-control-plane```
 > 如果加入失败想重新尝试，请输入 kubeadm reset 命令清除之前的设置，重新执行从“复制秘钥”和“加入集群”这两步
 显示安装过程:
@@ -852,13 +852,13 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```kubeadm join master.k8s.io:16443 --token dm3cw1.kw4hq84ie1376hji --discovery-token-ca-cert-hash sha256:f079b624773145ba714b56e177f52143f90f75a1dcebabda6538a49e224d4009```
 
 ## 3. 如果忘记加入集群的token和sha256 (如正常则跳过)
-+ 显示获取token列表
++ 显示获取token列表  
 ```kubeadm token list```
 默认情况下 Token 过期是时间是24小时，如果 Token 过期以后，可以输入以下命令，生成新的 Token
-```kubeadm token create```
+```kubeadm token create```  
 + 获取ca证书sha256编码hash值
 ```openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'```
-+ 拼接命令
++ 拼接命令  
 ```kubeadm join master.k8s.io:16443 --token 882ik4.9ib2kb0eftvuhb58 --discovery-token-ca-cert-hash sha256:0b1a836894d930c8558b350feeac8210c85c9d35b6d91fde202b870f3244016a```
 > 如果是master加入，请在最后面加上 –experimental-control-plane 这个参数
 
@@ -1041,7 +1041,7 @@ spec:
   selector:
     k8s-app: kubernetes-dashboard
 ```
-运行 dashboard
+运行 dashboard  
 ```kubectl create -f kubernetes-dashboard.yaml```
 
 ## 2. Dashboard 创建 ServiceAccount 并绑定 Admin 角色
@@ -1070,9 +1070,9 @@ metadata:
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
 ```
-运行dashboard的用户和角色绑定
+运行dashboard的用户和角色绑定  
 ```kubectl create -f dashboard-user-role.yaml```
-获取登陆token
+获取登陆token  
 ```kubectl describe secret/$(kubectl get secret -n kube-system |grep admin|awk '{print $1}') -n kube-system```
 显示：
 ```shell
@@ -1150,7 +1150,7 @@ ip link delete flannel.1
 systemctl start docker
 ```
 
-再次加入集群
+再次加入集群  
 ```kubeadm join cluster.kube.com:16443 --token gaeyou.k2650x660c8eb98c --discovery-token-ca-cert-hash sha256:daf4c2e0264422baa7076a2587f9224a5bd9c5667307927b0238743799dfb362```
 
 
